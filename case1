@@ -1,4 +1,4 @@
-install.packages("readr")
+iinstall.packages("readr")
 require(readr)
 require(dplyr)
 require(chron)
@@ -9,7 +9,7 @@ tao <- read_csv('Case1Table2Tao.csv')
 
 head(celine, 3)
 head(tao, 3)
-
+#change tables to use time values
 celine <- celine%>%
   transmute(`Patient ID` = `Patient ID`, 
             Arrival = chron(times. = Arrival),
@@ -58,5 +58,5 @@ average_wait_times <- average_wait_times%>%
   mutate(total_time = average_checkin_wait + average_checkin_time + average_see_doctor_wait + average_doctor_time)
 average_wait_times
 
-#next step to add a selective idling spot and calculate average wait time for Celine if the office had a 3rd queing step
+#next step to add a selective idling spot and calculate average wait time for Celine if the office had a 3rd queuing step
 
