@@ -1,0 +1,45 @@
+install.packages("readr")
+require(readr)
+require(dplyr)
+require(chron)
+setwd("/Users/michaelcolellajensen/Desktop/R")
+
+celine <- read_csv('Case1Table1Celine.csv')
+tao <- read_csv('Case1Table2Tao.csv')
+
+head(celine, 3)
+head(tao, 3)
+
+celine <- celine%>%
+  transmute(`Patient ID` = `Patient ID`, 
+            Arrival = chron(times. = Arrival),
+            `Check in Start` = chron(times. = `Check in Start`),
+            `Check in Ends` = chron(times. = `Check in Ends`),
+            `See Doctor` = chron(times. = `See Doctor`),
+            `Departure Time`= chron(times. = `Departure Time`)
+            )
+celine <- celine%>%
+  mutate(checkin_wait_time = `Check in Start` - Arrival,
+         Checkin_time = `Check in Ends` - `Check in Start`,
+         See_doctor_wait_time = `See Doctor` - `Check in Ends`,
+         Time_with_doctor = `Departure Time` - `See Doctor`
+         )
+head(celine)
+# celine table is edited to include columns for wait times at each step 
+
+tao <- tao%>%
+  transmute(`Patient ID` = `Patient ID`, 
+            Arrival = chron(times. = Arrival),
+            `Check in Start` = chron(times. = `Check in Start`),
+            `Check in Ends` = chron(times. = `Check in Ends`),
+            `See Doctor` = chron(times. = `See Doctor`),
+            `Departure Time`= chron(times. = `Departure Time`)
+  )
+tao <- tao%>%
+  mutate(checkin_wait_time = `Check in Start` - Arrival,
+         Checkin_time = `Check in Ends` - `Check in Start`,
+         See_doctor_wait_time = `See Doctor` - `Check in Ends`,
+         Time_with_doctor = `Departure Time` - `See Doctor`
+  )
+head(tao)
+# tao table is edited to include columns for wait times at each step 
