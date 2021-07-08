@@ -6,8 +6,6 @@ setwd("/Users/michaelcolellajensen/Desktop/R")
 celine <- read_csv('Case1Table1Celine.csv')
 tao <- read_csv('Case1Table2Tao.csv')
 
-head(celine, 3)
-head(tao, 3)
 #change tables to use time values
 celine <- celine%>%
   transmute(`Patient ID` = `Patient ID`, 
@@ -23,7 +21,6 @@ celine <- celine%>%
          See_doctor_wait_time = `See Doctor` - `Check in Ends`,
          Time_with_doctor = `Departure Time` - `See Doctor`
          )
-head(celine)
 # celine table is edited to include columns for wait times at each step 
 
 tao <- tao%>%
@@ -40,7 +37,6 @@ tao <- tao%>%
          See_doctor_wait_time = `See Doctor` - `Check in Ends`,
          Time_with_doctor = `Departure Time` - `See Doctor`
   )
-head(tao)
 # tao table is edited to include columns for wait times at each step 
 
 #next step is finding averages at each step and organizing them into a new df
@@ -51,11 +47,38 @@ average_wait_times <- tibble(
   average_see_doctor_wait = c(mean(celine$See_doctor_wait_time), mean(tao$See_doctor_wait_time)),
   average_doctor_time = c(mean(celine$Time_with_doctor), mean(tao$Time_with_doctor))
 )
-head(average_wait_times)
 #add a column for total 
 average_wait_times <- average_wait_times%>%
-  mutate(total_time = average_checkin_wait + average_checkin_time + average_see_doctor_wait + average_doctor_time)
-average_wait_times
+  mutate(total_time = average_checkin_wait + 
+  average_checkin_time + 
+  average_see_doctor_wait + 
+  average_doctor_time)
 
-#next step to add a selective idling spot and calculate average wait time for Celine if the office had a 3rd queuing step
+#next step to add a selective idling spot and calculate average wait time if the office had a 3rd queuing step
+#hypothetical with a see nurse step before seeing a doctor. 
+theoretical_wait_times <- average_wait_times%>%
+  transmute(emp_name = emp_name,
+            average_checkin_wait = average_checkin_wait,
+            average_checkin_time = average_checkin_time,
+            average_nurse_wait = average_see_doctor_wait/2,
+            average_nurse_time = average_doctor_time/5,
+            average_see_doctor_wait = average_see_doctor_wait/2,
+            average_doctor_time = average_doctor_time - average_nurse_time,
+            )
+theoretical_wait_times <- theoretical_wait_times%>%
+  mutate(total_time = average_checkin_wait +
+                      average_checkin_time +
+                      average_nurse_wait +
+                      average_nurse_time +
+                      average_see_doctor_wait +
+                      average_doctor_time
+  )
+theoretical_wait_times
+#both employees have a reduces average wait time for a dr by introducing a step to see a nurse first
 
+#clean-up
+detach('package:chron', unload = TRUE)
+detach('package:readr', unload = TRUE)
+detach('package:dplyr', unload = TRUE)
+cat('\014')
+rm(list = ls())
